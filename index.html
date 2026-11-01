@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Content...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #bait-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            border: 1px solid #333;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .verify-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .verify-btn:hover {
+            background-color: #0056b3;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .main-title {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            user-select: none;
+            z-index: 1;
+        }
+
+        .fake-window {
+            position: absolute;
+            width: 320px;
+            height: 180px;
+            background: #f0f0f0;
+            border: 2px solid #666;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .window-header {
+            background: linear-gradient(180deg, #007bff, #0056b3);
+            color: white;
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .window-close {
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .window-body {
+            flex-grow: 1;
+            background: #ffffff;
+            margin: 8px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            user-select: none;
+        }
+
+        .active-flash {
+            animation: flash 0.6s infinite ease-in-out !important;
+        }
+
+        .active-text-flash {
+            display: block !important;
+            animation: textFlash 0.6s infinite ease-in-out !important;
+        }
+
+        @keyframes flash {
+            0% { background-color: #ffffff; }
+            50% { background-color: #000000; }
+            100% { background-color: #ffffff; }
+        }
+
+        @keyframes textFlash {
+            0% { color: #000000; }
+            50% { color: #ffffff; }
+            100% { color: #000000; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bait-container">
+        <div class="spinner"></div>
+        <div style="font-size: 1.2rem; font-weight: 500;">Checking your connection...</div>
+        <button class="verify-btn" onclick="startPrank()">Click to Continue</button>
+    </div>
+
+    <div class="main-title" id="prank-text">You are an idiot! <br> ☺ ☺ ☺</div>
+
+    <!-- Relative audio link optimized for GitHub roots -->
+    <audio id="idiotSong" loop preload="auto">
+        <source src="idiot.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        const audio = document.getElementById('idiotSong');
+        const popups = [];
+
+        function startPrank() {
+            document.getElementById('bait-container').style.display = 'none';
+            document.title = "You are an idiot!";
+            document.body.classList.add('active-flash');
+            document.getElementById('prank-text').classList.add('active-text-flash');
+
+            // Plays relative audio file
+            audio.play().catch(e => console.log("Audio play blocked:", e));
+
+            for (let i = 0; i < 5; i++) {
+                createFakeWindow();
+            }
+            setInterval(movePopups, 10);
+        }
+
+        function createFakeWindow() {
+            const win = document.createElement('div');
+            win.className = 'fake-window';
+            
+            win.innerHTML = `
+                <div class="window-header">
+                    <span>Message from System</span>
+                    <button class="window-close">X</button>
+                </div>
+                <div class="window-body">
+                    <span class="window-title">You are an idiot!<br>☺ ☺ ☺</span>
+                </div>
+            `;
+            document.body.appendChild(win);
+
+            const popupData = {
+                element: win,
+                x: Math.random() * (window.innerWidth - 320),
+                y: Math.random() * (window.innerHeight - 180),
+                dx: (Math.random() > 0.5 ? 3 : -3) * (Math.random() * 1.5 + 1),
+                dy: (Math.random() > 0.5 ? 3 : -3) * (Math.random() * 1.5 + 1)
+            };
+
+            const label = win.querySelector('.window-title');
+            label.style.animation = 'textFlash 0.6s infinite ease-in-out';
+
+            popups.push(popupData);
+        }
+
+        function movePopups() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            popups.forEach(p => {
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x <= 0 || p.x + 320 >= screenWidth) p.dx *= -1;
+                if (p.y <= 0 || p.y + 180 >= screenHeight) p.dy *= -1;
+
+                p.element.style.left = p.x + 'px';
+                p.element.style.top = p.y + 'px';
+            });
+        }
+    </script>
+
+</body>
+</html>
